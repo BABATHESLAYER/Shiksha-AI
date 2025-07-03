@@ -28,15 +28,16 @@ import { useToast } from '@/hooks/use-toast';
 import { BookOpenCheck } from 'lucide-react';
 
 const formSchema = z.object({
+  name: z.string().min(1, { message: 'Name is required.' }),
   email: z.string().email({
     message: 'Please enter a valid email address.',
   }),
-  password: z.string().min(1, {
-    message: 'Password is required.',
+  password: z.string().min(6, {
+    message: 'Password must be at least 6 characters.',
   }),
 });
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -44,6 +45,7 @@ export default function LoginPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: '',
       email: '',
       password: '',
     },
@@ -55,8 +57,8 @@ export default function LoginPage() {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     console.log(values);
     toast({
-      title: 'Login Successful',
-      description: 'Redirecting to your dashboard...',
+      title: 'Account Created',
+      description: "You've been successfully signed up!",
     });
     router.push('/dashboard');
     setIsLoading(false);
@@ -71,12 +73,25 @@ export default function LoginPage() {
           </div>
           <CardTitle className="text-3xl font-bold font-headline">Shiksha AI</CardTitle>
           <CardDescription>
-            Welcome back! Please login to your account.
+            Create an account to get started.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Full Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Your Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="email"
@@ -104,15 +119,15 @@ export default function LoginPage() {
                 )}
               />
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Logging in...' : 'Login'}
+                {isLoading ? 'Creating Account...' : 'Sign Up'}
               </Button>
             </form>
           </Form>
         </CardContent>
         <CardContent className="mt-0 text-center text-sm">
-          Don't have an account?{' '}
-          <Link href="/signup" className="font-semibold text-primary hover:underline">
-            Sign up
+          Already have an account?{' '}
+          <Link href="/" className="font-semibold text-primary hover:underline">
+            Login
           </Link>
         </CardContent>
       </Card>
